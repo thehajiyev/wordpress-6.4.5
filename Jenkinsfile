@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Kodu GitHub-dan çek') {
             steps {
-                git 'https://github.com/thehajiyev/wordpress-6.4.5.git'
+                git branch: 'main', url: 'https://github.com/thehajiyev/wordpress-6.4.5.git'
             }
         }
 
