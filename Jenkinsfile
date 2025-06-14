@@ -17,16 +17,16 @@ pipeline {
             steps {
                 sh '''
                     echo "[*] Konteynerlər qaldırılır..."
-                    docker compose -f ${DOCKER_COMPOSE_FILE} up -d
+                    docker-compose -f ${DOCKER_COMPOSE_FILE} up -d
                 '''
             }
         }
 
-        stage('Install Python and Semgrep') {
+        stage('Install Python & Semgrep') {
             steps {
                 sh '''
                     echo "[*] Python və pip quraşdırılır..."
-                    sudo apt-get update
+                    sudo apt-get update -y
                     sudo apt-get install -y python3 python3-pip
 
                     echo "[*] Semgrep quraşdırılır..."
@@ -48,7 +48,7 @@ pipeline {
             steps {
                 sh '''
                     echo "[*] Konteynerlər dayandırılır..."
-                    docker compose -f ${DOCKER_COMPOSE_FILE} down
+                    docker-compose -f ${DOCKER_COMPOSE_FILE} down
                 '''
             }
         }
