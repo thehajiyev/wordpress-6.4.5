@@ -2,10 +2,19 @@ pipeline {
     agent any
 
     environment {
-        COMPOSE_PROJECT_NAME = "wordpress_test"
+        DOCKER = "/usr/bin/docker"
+        COMPOSE = "/usr/local/bin/docker-compose"  // Əgər compose varsa, yoxla
     }
 
     stages {
+        stage('Check Docker') {
+            steps {
+                echo "Docker və Docker Compose mövcuddurmu?"
+                sh "${DOCKER} --version || echo 'Docker tapılmadı!'"
+                sh "${COMPOSE} version || echo 'Docker Compose tapılmadı!'"
+            }
+        }
+
         stage('Checkout') {
             steps {
                 git url: 'https://github.com/thehajiyev/wordpress-6.4.5.git', branch: 'main'
@@ -15,8 +24,8 @@ pipeline {
         stage('Docker Compose Up') {
             steps {
                 echo "WordPress və MySQL konteynerlərini qaldırırıq..."
-                sh 'docker-compose up -d'
-                sh 'sleep 20' // Servis yuxarı qalxana qədər gözləyək
+                sh "${COMPOSE} up -d"
+                sh 'sleep 20'
             }
         }
 
@@ -54,7 +63,7 @@ pipeline {
         stage('Docker Compose Down') {
             steps {
                 echo "Təmizləmə: konteynerləri söndürürük"
-                sh 'docker-compose down'
+                sh "${COMPOSE} down"
             }
         }
     }
