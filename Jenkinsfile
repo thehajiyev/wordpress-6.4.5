@@ -25,12 +25,16 @@ pipeline {
         stage('Install Python & Semgrep') {
             steps {
                 sh '''
-                    echo "[*] Python və pip quraşdırılır..."
-                    sudo apt-get update -y
-                    sudo apt-get install -y python3 python3-pip
+                    echo "[*] Python, venv və Semgrep quraşdırılır..."
 
-                    echo "[*] Semgrep quraşdırılır..."
-                    pip3 install semgrep
+                    apt-get update -y
+                    apt-get install -y python3 python3-venv
+
+                    python3 -m venv venv
+                    . venv/bin/activate
+
+                    pip install --upgrade pip
+                    pip install semgrep
                 '''
             }
         }
@@ -39,6 +43,8 @@ pipeline {
             steps {
                 sh '''
                     echo "[*] Semgrep scan başlayır..."
+
+                    . venv/bin/activate
                     semgrep --config=auto --output=semgrep-results.json --json .
                 '''
             }
@@ -56,7 +62,7 @@ pipeline {
 
     post {
         always {
-            echo "[*] Nəticələr saxlanılır..."
+            echo "[*] Scan nəticələri saxlanılır..."
             archiveArtifacts artifacts: 'semgrep-results.json', allowEmptyArchive: true
         }
     }
